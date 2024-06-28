@@ -16,6 +16,7 @@ class Cfg(PrefixProto, cli=False):
         env_spacing = 3.  # not used with heightfields/trimeshes
         send_timeouts = True  # send time out information to the algorithm
         episode_length_s = 20  # episode length in seconds
+        
         observe_vel = True
         observe_only_ang_vel = False
         observe_only_lin_vel = False
@@ -27,6 +28,7 @@ class Cfg(PrefixProto, cli=False):
         observe_timing_parameter = False
         observe_clock_inputs = False
         observe_two_prev_actions = False
+        
         observe_imu = False
         record_video = True
         recording_width_px = 360

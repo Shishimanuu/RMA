@@ -3,6 +3,6 @@
 
 """Implementation of runners for environment-agent interaction."""
 
-from .on_policy_runner import OnPolicyRunner
+from .on_policy_runner import OnPolicyRunner,caches
 
-__all__ = ["OnPolicyRunner"]
+__all__ = ["OnPolicyRunner","caches"]

@@ -16,6 +16,15 @@ from rsl_rl.env import VecEnv
 from rsl_rl.modules import ActorCritic, ActorCriticRecurrent, EmpiricalNormalization
 from rsl_rl.utils import store_code_state
 
+class DataCaches:
+    def __init__(self, curriculum_bins):
+        from rsl_rl.metrics_caches import DistCache, SlotCache
+
+        self.slot_cache = SlotCache(curriculum_bins)
+        self.dist_cache = DistCache()
+
+
+caches = DataCaches(1)
 
 class OnPolicyRunner:
     """On-policy runner for training and evaluation."""
@@ -28,10 +37,12 @@ class OnPolicyRunner:
         self.env = env
         obs, extras = self.env.get_observations()
         num_obs = obs.shape[1]
+
         if "critic" in extras["observations"]:
             num_critic_obs = extras["observations"]["critic"].shape[1]
         else:
             num_critic_obs = num_obs
+
         actor_critic_class = eval(self.policy_cfg.pop("class_name"))  # ActorCritic
         actor_critic: ActorCritic | ActorCriticRecurrent = actor_critic_class(
             num_obs, num_critic_obs, self.env.num_actions, **self.policy_cfg
@@ -41,6 +52,7 @@ class OnPolicyRunner:
         self.num_steps_per_env = self.cfg["num_steps_per_env"]
         self.save_interval = self.cfg["save_interval"]
         self.empirical_normalization = self.cfg["empirical_normalization"]
+        
         if self.empirical_normalization:
             self.obs_normalizer = EmpiricalNormalization(shape=[num_obs], until=1.0e8).to(self.device)
             self.critic_obs_normalizer = EmpiricalNormalization(shape=[num_critic_obs], until=1.0e8).to(self.device)
@@ -49,12 +61,12 @@ class OnPolicyRunner:
             self.critic_obs_normalizer = torch.nn.Identity()  # no normalization
         # init storage and model
         self.alg.init_storage(
-            self.env.num_envs,
-            self.num_steps_per_env,
-            [num_obs],
-            [num_critic_obs],
-            [self.env.num_actions],
-        )
+            self.env.num_train_envs, 
+            self.num_steps_per_env, 
+            [self.env.num_obs],
+            [self.env.num_privileged_obs],
+            [self.env.num_obs_history],
+            [self.env.num_actions])
 
         # Log
         self.log_dir = log_dir

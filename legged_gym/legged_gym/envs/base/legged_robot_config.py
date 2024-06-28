@@ -34,7 +34,8 @@ class LeggedRobotCfg(BaseConfig):
     class env:
         num_envs = 4096
         num_observations = 70
-        num_privileged_obs = None # if not None a priviledge_obs_buf will be returned by step() (critic obs for assymetric training). None is returned otherwise 
+        num_privileged_obs = 18 # if not None a priviledge_obs_buf will be returned by step() (critic obs for assymetric training). None is returned otherwise 
+        privileged_future_horizon = 1
         num_actions = 12
         env_spacing = 3.  # not used with heightfields/trimeshes 
         send_timeouts = True # send time out information to the algorithm
@@ -52,6 +53,31 @@ class LeggedRobotCfg(BaseConfig):
         observe_timing_parameter = False
         observe_clock_inputs = True
         observe_two_prev_actions = True
+
+        priv_observe_friction = True
+        priv_observe_friction_indep = True
+        priv_observe_ground_friction = False
+        priv_observe_ground_friction_per_foot = False
+        priv_observe_restitution = True
+        priv_observe_base_mass = True
+        priv_observe_com_displacement = True
+        priv_observe_motor_strength = False
+        priv_observe_motor_offset = False
+        priv_observe_joint_friction = True
+        priv_observe_Kp_factor = True
+        priv_observe_Kd_factor = True
+        priv_observe_contact_forces = False
+        priv_observe_contact_states = False
+        priv_observe_body_velocity = False
+        priv_observe_foot_height = False
+        priv_observe_body_height = False
+        priv_observe_gravity = False
+        priv_observe_terrain_type = False
+        priv_observe_clock_inputs = False
+        priv_observe_doubletime_clock_inputs = False
+        priv_observe_halftime_clock_inputs = False
+        priv_observe_desired_contact_states = False
+        priv_observe_dummy_variable = False
 
     class terrain:
         mesh_type = 'trimesh' # "heightfield" # none, plane, heightfield or trimesh
@@ -257,7 +283,7 @@ class LeggedRobotCfg(BaseConfig):
         lag_timesteps = 6
 
     class rewards:
-        class scales:
+        class reward_scales:
             termination = -0.0
             tracking_lin_vel = 1.0
             tracking_ang_vel = 0.5
@@ -411,6 +437,12 @@ class LeggedRobotCfgPPO(BaseConfig):
         # rnn_type = 'lstm'
         # rnn_hidden_size = 512
         # rnn_num_layers = 1
+        adaptation_module_branch_hidden_dims = [[256, 32]]
+
+        env_factor_encoder_branch_input_dims = [18]
+        env_factor_encoder_branch_latent_dims = [18]
+        env_factor_encoder_branch_hidden_dims = [[256, 128]]
+
         
     class algorithm:
         # training params
@@ -421,6 +453,8 @@ class LeggedRobotCfgPPO(BaseConfig):
         num_learning_epochs = 5
         num_mini_batches = 4 # mini batch size = num_envs*nsteps / nminibatches
         learning_rate = 1.e-3 #5.e-4
+        adaptation_module_learning_rate = 1.e-3
+        num_adaptation_module_substeps = 1
         schedule = 'adaptive' # could be adaptive, fixed
         gamma = 0.99
         lam = 0.95
@@ -442,3 +476,5 @@ class LeggedRobotCfgPPO(BaseConfig):
         load_run = -1 # -1 = last run
         checkpoint = -1 # -1 = last saved model
         resume_path = None # updated from load_run and chkpt
+
+    
