@@ -1,0 +1,738 @@
+<sdf version='1.7'>
+  <model name='svan_urdf_package'>
+    <link name='base_link'>
+      <inertial>
+        <pose>-0.000736 -1.7e-05 9.9e-05 0 -0 0</pose>
+        <mass>2.99711</mass>
+        <inertia>
+          <ixx>0.00437981</ixx>
+          <ixy>-3.84605e-08</ixy>
+          <ixz>-6.89976e-08</ixz>
+          <iyy>0.010736</iyy>
+          <iyz>4.61648e-07</iyz>
+          <izz>0.0128759</izz>
+        </inertia>
+      </inertial>
+      <collision name='base_link_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/torso_link.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='base_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/torso_link.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='fl_abd_j' type='revolute'>
+      <pose relative_to='base_link'>0.20368 0.06 0 0 -0 0</pose>
+      <parent>base_link</parent>
+      <child>fl_abd_l</child>
+      <axis>
+        <xyz>-1 0 0</xyz>
+        <limit>
+          <lower>-3</lower>
+          <upper>3</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='fl_abd_l'>
+      <pose relative_to='fl_abd_j'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.043135 0.061904 1.3e-05 0 -0 0</pose>
+        <mass>0.54709</mass>
+        <inertia>
+          <ixx>0.000195964</ixx>
+          <ixy>-6.55732e-06</ixy>
+          <ixz>-8.03608e-10</ixz>
+          <iyy>0.000300416</iyy>
+          <iyz>-1.87451e-08</iyz>
+          <izz>0.000205685</izz>
+        </inertia>
+      </inertial>
+      <collision name='fl_abd_l_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fl_abd_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='fl_abd_l_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fl_abd_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='fl_hip_j' type='revolute'>
+      <pose relative_to='fl_abd_l'>0.043 0.07525 0 0 -0 0</pose>
+      <parent>fl_abd_l</parent>
+      <child>fl_hip_l</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-3</lower>
+          <upper>3</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='fl_hip_l'>
+      <pose relative_to='fl_hip_j'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.001659 -0.01 -0.071316 0 -0 0</pose>
+        <mass>0.147109</mass>
+        <inertia>
+          <ixx>0.000309579</ixx>
+          <ixy>3.78431e-11</ixy>
+          <ixz>6.99142e-06</ixz>
+          <iyy>0.00032931</iyy>
+          <iyz>6.7858e-11</iyz>
+          <izz>2.1386e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='fl_hip_l_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fl_hip_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='fl_hip_l_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fl_hip_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='fl_knee_j' type='revolute'>
+      <pose relative_to='fl_hip_l'>0.004139 -0.01 -0.16494 0 -0 0</pose>
+      <parent>fl_hip_l</parent>
+      <child>fl_knee_a</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-3</lower>
+          <upper>3</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='fl_knee_a'>
+      <pose relative_to='fl_knee_j'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.002883 2e-06 -0.075632 0 -0 0</pose>
+        <mass>0.122432</mass>
+        <inertia>
+          <ixx>9.46587e-05</ixx>
+          <ixy>-2.61186e-09</ixy>
+          <ixz>6.75839e-06</ixz>
+          <iyy>0.000110139</iyy>
+          <iyz>-5.27408e-09</iyz>
+          <izz>2.06782e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='fl_knee_a_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fl_knee_a.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <collision name='fl_knee_a_fixed_joint_lump__fl_dummy_l_collision_1'>
+        <pose>-0.026618 0 -0.16693 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fl_dummy_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='fl_knee_a_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fl_knee_a.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='fl_knee_a_fixed_joint_lump__fl_dummy_l_visual_1'>
+        <pose>-0.026618 0 -0.16693 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fl_dummy_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='fr_abd_j' type='revolute'>
+      <pose relative_to='base_link'>0.20368 -0.06 0 0 -0 0</pose>
+      <parent>base_link</parent>
+      <child>fr_abd_l</child>
+      <axis>
+        <xyz>-1 0 0</xyz>
+        <limit>
+          <lower>-3</lower>
+          <upper>3</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='fr_abd_l'>
+      <pose relative_to='fr_abd_j'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.043135 -0.061904 -1.3e-05 0 -0 0</pose>
+        <mass>0.54709</mass>
+        <inertia>
+          <ixx>0.000195964</ixx>
+          <ixy>6.55732e-06</ixy>
+          <ixz>8.03608e-10</ixz>
+          <iyy>0.000300416</iyy>
+          <iyz>-1.87451e-08</iyz>
+          <izz>0.000205685</izz>
+        </inertia>
+      </inertial>
+      <collision name='fr_abd_l_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fr_abd_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='fr_abd_l_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fr_abd_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='fr_hip_j' type='revolute'>
+      <pose relative_to='fr_abd_l'>0.043 -0.07525 0 0 -0 0</pose>
+      <parent>fr_abd_l</parent>
+      <child>fr_hip_l</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-3</lower>
+          <upper>3</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='fr_hip_l'>
+      <pose relative_to='fr_hip_j'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.001659 0.01 -0.071316 0 -0 0</pose>
+        <mass>0.147109</mass>
+        <inertia>
+          <ixx>0.000309579</ixx>
+          <ixy>3.78431e-11</ixy>
+          <ixz>6.99142e-06</ixz>
+          <iyy>0.00032931</iyy>
+          <iyz>6.7858e-11</iyz>
+          <izz>2.1386e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='fr_hip_l_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fr_hip_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='fr_hip_l_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fr_hip_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='fr_knee_j' type='revolute'>
+      <pose relative_to='fr_hip_l'>0.004139 0.01 -0.16494 0 -0 0</pose>
+      <parent>fr_hip_l</parent>
+      <child>fr_knee_l</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-3</lower>
+          <upper>3</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='fr_knee_l'>
+      <pose relative_to='fr_knee_j'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.002883 2e-06 -0.075632 0 -0 0</pose>
+        <mass>0.122432</mass>
+        <inertia>
+          <ixx>9.46587e-05</ixx>
+          <ixy>-2.61185e-09</ixy>
+          <ixz>6.75853e-06</ixz>
+          <iyy>0.000110139</iyy>
+          <iyz>-5.27408e-09</iyz>
+          <izz>2.06781e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='fr_knee_l_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fr_knee_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <collision name='fr_knee_l_fixed_joint_lump__fr_dummy_l_collision_1'>
+        <pose>-0.026457 0 -0.16693 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fr_dummy_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='fr_knee_l_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fr_knee_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='fr_knee_l_fixed_joint_lump__fr_dummy_l_visual_1'>
+        <pose>-0.026457 0 -0.16693 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/fr_dummy_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='rl_abd_j' type='revolute'>
+      <pose relative_to='base_link'>-0.20482 0.06 0 0 -0 0</pose>
+      <parent>base_link</parent>
+      <child>rl_abd_l</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-3</lower>
+          <upper>3</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='rl_abd_l'>
+      <pose relative_to='rl_abd_j'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-0.040834 0.061904 -0.000179 0 -0 0</pose>
+        <mass>0.54709</mass>
+        <inertia>
+          <ixx>0.000195964</ixx>
+          <ixy>6.63504e-06</ixy>
+          <ixz>-8.03608e-10</ixz>
+          <iyy>0.000300416</iyy>
+          <iyz>6.06376e-10</iyz>
+          <izz>0.000205685</izz>
+        </inertia>
+      </inertial>
+      <collision name='rl_abd_l_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rl_abd_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='rl_abd_l_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rl_abd_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='rl_hip_j' type='revolute'>
+      <pose relative_to='rl_abd_l'>-0.043 0.07525 0 0 -0 0</pose>
+      <parent>rl_abd_l</parent>
+      <child>rl_hip_l</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-3</lower>
+          <upper>3</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='rl_hip_l'>
+      <pose relative_to='rl_hip_j'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-0.0018 -0.01 -0.071312 0 -0 0</pose>
+        <mass>0.147109</mass>
+        <inertia>
+          <ixx>0.000309581</ixx>
+          <ixy>4.14968e-11</ixy>
+          <ixz>-6.99465e-06</ixz>
+          <iyy>0.000329312</iyy>
+          <iyz>6.56223e-11</iyz>
+          <izz>2.13862e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='rl_hip_l_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rl_hip_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='rl_hip_l_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rl_hip_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='rl_knee_j' type='revolute'>
+      <pose relative_to='rl_hip_l'>-0.003862 -0.01 -0.16493 0 -0 0</pose>
+      <parent>rl_hip_l</parent>
+      <child>rl_knee_l</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-3</lower>
+          <upper>3</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='rl_knee_l'>
+      <pose relative_to='rl_knee_j'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.006544 2e-06 -0.075404 0 -0 0</pose>
+        <mass>0.122432</mass>
+        <inertia>
+          <ixx>9.38298e-05</ixx>
+          <ixy>-2.35378e-09</ixy>
+          <ixz>1.0306e-05</ixz>
+          <iyy>0.000110138</iyy>
+          <iyz>-5.39355e-09</iyz>
+          <izz>2.15059e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='rl_knee_l_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rl_knee_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <collision name='rl_knee_l_fixed_joint_lump__rl_dummy_l_collision_1'>
+        <pose>-0.0185 0 -0.16802 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rl_dummy_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='rl_knee_l_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rl_knee_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='rl_knee_l_fixed_joint_lump__rl_dummy_l_visual_1'>
+        <pose>-0.0185 0 -0.16802 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rl_dummy_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='rr_abd_j' type='revolute'>
+      <pose relative_to='base_link'>-0.20482 -0.06 0 0 -0 0</pose>
+      <parent>base_link</parent>
+      <child>rr_abd_l</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-3</lower>
+          <upper>3</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='rr_abd_l'>
+      <pose relative_to='rr_abd_j'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-0.040834 -0.061904 0.000179 0 -0 0</pose>
+        <mass>0.54709</mass>
+        <inertia>
+          <ixx>0.000195964</ixx>
+          <ixy>-6.63504e-06</ixy>
+          <ixz>8.03608e-10</ixz>
+          <iyy>0.000300416</iyy>
+          <iyz>6.06376e-10</iyz>
+          <izz>0.000205685</izz>
+        </inertia>
+      </inertial>
+      <collision name='rr_abd_l_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rr_abd_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='rr_abd_l_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rr_abd_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='rr_hip_j' type='revolute'>
+      <pose relative_to='rr_abd_l'>-0.043 -0.07525 0 0 -0 0</pose>
+      <parent>rr_abd_l</parent>
+      <child>rr_hip_l</child>
+      <axis>
+        <xyz>0 -1 0</xyz>
+        <limit>
+          <lower>-3</lower>
+          <upper>3</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='rr_hip_l'>
+      <pose relative_to='rr_hip_j'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>-0.001659 0.01 -0.071316 0 -0 0</pose>
+        <mass>0.147109</mass>
+        <inertia>
+          <ixx>0.000309579</ixx>
+          <ixy>3.78431e-11</ixy>
+          <ixz>-6.99142e-06</ixz>
+          <iyy>0.00032931</iyy>
+          <iyz>-6.7858e-11</iyz>
+          <izz>2.1386e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='rr_hip_l_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rr_hip_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='rr_hip_l_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rr_hip_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='rr_knee_j' type='revolute'>
+      <pose relative_to='rr_hip_l'>-0.003862 0.01 -0.16493 0 -0 0</pose>
+      <parent>rr_hip_l</parent>
+      <child>rr_knee_l</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-3</lower>
+          <upper>3</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='rr_knee_l'>
+      <pose relative_to='rr_knee_j'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.006544 2e-06 -0.075404 0 -0 0</pose>
+        <mass>0.122432</mass>
+        <inertia>
+          <ixx>9.38298e-05</ixx>
+          <ixy>-2.35377e-09</ixy>
+          <ixz>1.03061e-05</ixz>
+          <iyy>0.000110137</iyy>
+          <iyz>-5.39354e-09</iyz>
+          <izz>2.15058e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='rr_knee_l_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rr_knee_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <collision name='rr_knee_l_fixed_joint_lump__rr_dummy_l_collision_1'>
+        <pose>-0.018339 0 -0.16802 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rr_dummy_l.STL</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='rr_knee_l_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rr_knee_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='rr_knee_l_fixed_joint_lump__rr_dummy_l_visual_1'>
+        <pose>-0.018339 0 -0.16802 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://svan_urdf_package/meshes/rr_dummy_l.STL</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <plugin name='joint_state_sensor' filename='libjoint_state_sensor.so'/>
+    <plugin name='base_state_sensor' filename='libbase_state_sensor.so'/>
+    <static>0</static>
+    <plugin name='contact_plugin' filename='libcontact_plugin_new.so'>
+      <link1>fr_dummy_l</link1>
+      <link2>fl_dummy_l</link2>
+      <link3>rl_dummy_l</link3>
+      <link4>rr_dummy_l</link4>
+      <contact_model>0</contact_model>
+    </plugin>
+    <plugin name='motor_controller' filename='libmotor_controller.so'>
+      <kp0>400</kp0>
+      <kp1>90.84</kp1>
+      <kp2>12.415</kp2>
+      <kd0>5</kd0>
+      <kd1>2</kd1>
+      <kd2>0.50</kd2>
+    </plugin>
+  </model>
+</sdf>
