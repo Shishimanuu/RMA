@@ -79,8 +79,13 @@ class Runner:
         self.num_steps_per_env = RunnerArgs.num_steps_per_env
 
         # init storage and model
-        self.alg.init_storage(self.env.num_train_envs, self.num_steps_per_env, [self.env.num_obs],
-                              [self.env.num_privileged_obs], [self.env.num_obs_history], [self.env.num_actions])
+        self.alg.init_storage(
+                              self.env.num_train_envs, 
+                              self.num_steps_per_env, 
+                              [self.env.num_obs],
+                              [self.env.num_privileged_obs], 
+                              [self.env.num_obs_history], 
+                              [self.env.num_actions])
 
         self.tot_timesteps = 0
         self.tot_time = 0
@@ -97,8 +102,9 @@ class Runner:
         logger.start('start', 'epoch', 'episode', 'run', 'step')
 
         if init_at_random_ep_len:
-            self.env.episode_length_buf = torch.randint_like(self.env.episode_length_buf,
-                                                             high=int(self.env.max_episode_length))
+            self.env.episode_length_buf = torch.randint_like(
+                self.env.episode_length_buf,
+                high=int(self.env.max_episode_length))
 
         # split train and test envs
         num_train_envs = self.env.num_train_envs

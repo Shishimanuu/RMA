@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import torch
 from abc import ABC, abstractmethod
-
+from typing import Tuple, Union
 
 class VecEnv(ABC):
     """Abstract class for vectorized environment.
@@ -54,32 +54,18 @@ class VecEnv(ABC):
     """
 
     @abstractmethod
-    def get_observations(self) -> tuple[torch.Tensor, dict]:
-        """Return the current observations.
-
-        Returns:
-            Tuple[torch.Tensor, dict]: Tuple containing the observations and extras.
-        """
-        raise NotImplementedError
+    def step(self, actions: torch.Tensor) -> Tuple[
+        torch.Tensor, Union[torch.Tensor, None], torch.Tensor, torch.Tensor, dict]:
+        pass
 
     @abstractmethod
-    def reset(self) -> tuple[torch.Tensor, dict]:
-        """Reset all environment instances.
-
-        Returns:
-            Tuple[torch.Tensor, dict]: Tuple containing the observations and extras.
-        """
-        raise NotImplementedError
+    def reset(self, env_ids: Union[list, torch.Tensor]):
+        pass
 
     @abstractmethod
-    def step(self, actions: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, dict]:
-        """Apply input action on the environment.
+    def get_observations(self) -> torch.Tensor:
+        pass
 
-        Args:
-            actions (torch.Tensor): Input actions to apply. Shape: (num_envs, num_actions)
-
-        Returns:
-            Tuple[torch.Tensor, torch.Tensor, torch.Tensor, dict]:
-                A tuple containing the observations, rewards, dones and extra information (metrics).
-        """
-        raise NotImplementedError
+    @abstractmethod
+    def get_privileged_observations(self) -> Union[torch.Tensor, None]:
+        pass
