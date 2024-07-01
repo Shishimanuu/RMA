@@ -462,19 +462,20 @@ class LeggedRobotCfgPPO(BaseConfig):
         max_grad_norm = 1.
 
     class runner:
-        policy_class_name = 'ActorCritic'
+        # runner
         algorithm_class_name = 'PPO'
-        num_steps_per_env = 48 # per iteration
-        max_iterations = 1500 # number of policy updates
-
+        num_steps_per_env = 24  # per iteration
+        max_iterations = 1500  # number of policy updates
+    
         # logging
-        save_interval = 50 # check for potential saves every this many iterations
-        experiment_name = 'test'
-        run_name = ''
+        save_interval = 400  # check for potential saves every this many iterations
+        save_video_interval = 100
+        log_freq = 10
+    
         # load and resume
         resume = False
-        load_run = -1 # -1 = last run
-        checkpoint = -1 # -1 = last saved model
-        resume_path = None # updated from load_run and chkpt
+        load_run = -1  # -1 = last run
+        checkpoint = -1  # -1 = last saved model
+        resume_path = None  # updated from load_run and chkpt
 
     

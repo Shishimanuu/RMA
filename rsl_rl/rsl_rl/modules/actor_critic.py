@@ -14,8 +14,7 @@ class ActorCritic(nn.Module):
 
     def __init__(
         self,
-        num_actor_obs,
-        num_critic_obs,
+        num_obs,
         num_privileged_obs,
         num_obs_history,
         num_actions,
@@ -38,11 +37,51 @@ class ActorCritic(nn.Module):
 
         activation = get_activation(activation)
 
-        mlp_input_dim_a = num_actor_obs
-        mlp_input_dim_c = num_critic_obs
+        # mlp_input_dim_a = num_actor_obs
+        # mlp_input_dim_c = num_critic_obs
+        for i, (branch_input_dim, branch_hidden_dims, branch_latent_dim) in enumerate(
+                zip(env_factor_encoder_branch_input_dims,
+                    env_factor_encoder_branch_hidden_dims,
+                    env_factor_encoder_branch_latent_dims)):
+            # Env factor encoder
+            env_factor_encoder_layers = []
+            env_factor_encoder_layers.append(nn.Linear(branch_input_dim, branch_hidden_dims[0]))
+            env_factor_encoder_layers.append(activation)
+            for l in range(len(branch_hidden_dims)):
+                if l == len(branch_hidden_dims) - 1:
+                    env_factor_encoder_layers.append(
+                        nn.Linear(branch_hidden_dims[l], branch_latent_dim))
+                else:
+                    env_factor_encoder_layers.append(
+                        nn.Linear(branch_hidden_dims[l],
+                                  branch_hidden_dims[l + 1]))
+                    env_factor_encoder_layers.append(activation)
+        self.env_factor_encoder = nn.Sequential(*env_factor_encoder_layers)
+        self.add_module(f"encoder", self.env_factor_encoder)
+
+        # Adaptation module
+        for i, (branch_hidden_dims, branch_latent_dim) in enumerate(zip(adaptation_module_branch_hidden_dims,
+                                                                        env_factor_encoder_branch_latent_dims)):
+            adaptation_module_layers = []
+            adaptation_module_layers.append(nn.Linear(num_obs_history, branch_hidden_dims[0]))
+            adaptation_module_layers.append(activation)
+            for l in range(len(branch_hidden_dims)):
+                if l == len(branch_hidden_dims) - 1:
+                    adaptation_module_layers.append(
+                        nn.Linear(branch_hidden_dims[l], branch_latent_dim))
+                else:
+                    adaptation_module_layers.append(
+                        nn.Linear(branch_hidden_dims[l],
+                                  branch_hidden_dims[l + 1]))
+                    adaptation_module_layers.append(activation)
+        self.adaptation_module = nn.Sequential(*adaptation_module_layers)
+        self.add_module(f"adaptation_module", self.adaptation_module)
+
+        total_latent_dim = int(torch.sum(torch.Tensor(env_factor_encoder_branch_latent_dims)))
+
         # Policy
         actor_layers = []
-        actor_layers.append(nn.Linear(total_latent_dim + num_obs, AC_Args.actor_hidden_dims[0]))
+        actor_layers.append(nn.Linear(total_latent_dim + num_obs, actor_hidden_dims[0]))
         actor_layers.append(activation)
         for l in range(len(actor_hidden_dims)):
             if l == len(actor_hidden_dims) - 1:
