@@ -19,13 +19,13 @@ class PPO:
     def __init__(
         self,
         actor_critic,
-        num_learning_epochs=1,
-        num_mini_batches=1,
+        num_learning_epochs=5,
+        num_mini_batches=4,
         clip_param=0.2,
         gamma=0.998,
         lam=0.95,
         value_loss_coef=1.0,
-        entropy_coef=0.0,
+        entropy_coef=0.01,
         learning_rate=1e-3,
         adaptation_module_learning_rate = 1.e-3,
         num_adaptation_module_substeps = 1,
@@ -46,6 +46,8 @@ class PPO:
         self.actor_critic.to(self.device)
         self.storage = None  # initialized later
         self.optimizer = optim.Adam(self.actor_critic.parameters(), lr=learning_rate)
+        self.adaptation_module_optimizer = optim.Adam(self.actor_critic.parameters(),
+                                                      lr=adaptation_module_learning_rate)
         self.transition = RolloutStorage.Transition()
 
         # PPO parameters
