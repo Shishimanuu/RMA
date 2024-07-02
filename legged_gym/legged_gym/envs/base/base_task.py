@@ -37,7 +37,7 @@ import torch
 # Base class for RL tasks
 class BaseTask():
 
-    def __init__(self, cfg, sim_params, physics_engine, sim_device, headless):
+    def __init__(self, cfg, sim_params, physics_engine, sim_device, headless, eval_cfg=None):
         self.gym = gymapi.acquire_gym()
 
         self.sim_params = sim_params
@@ -57,10 +57,19 @@ class BaseTask():
         if self.headless == True:
             self.graphics_device_id = -1
 
-        self.num_envs = cfg.env.num_envs
+        # self.num_envs = cfg.env.num_envs
         self.num_obs = cfg.env.num_observations
         self.num_privileged_obs = cfg.env.num_privileged_obs
         self.num_actions = cfg.env.num_actions
+
+        if eval_cfg is not None:
+            self.num_eval_envs = eval_cfg.env.num_envs
+            self.num_train_envs = cfg.env.num_envs
+            self.num_envs = self.num_eval_envs + self.num_train_envs
+        else:
+            self.num_eval_envs = 0
+            self.num_train_envs = cfg.env.num_envs
+            self.num_envs = cfg.env.num_envs
 
         # optimization flags for pytorch JIT
         torch._C._jit_set_profiling_mode(False)
@@ -74,12 +83,14 @@ class BaseTask():
         self.reset_buf = torch.ones(self.num_envs, device=self.device, dtype=torch.long)
         self.episode_length_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.long)
         self.time_out_buf = torch.zeros(self.num_envs, device=self.device, dtype=torch.bool)
+        self.privileged_obs_buf = torch.zeros(self.num_envs, self.num_privileged_obs, device=self.device,
+                                              dtype=torch.float)
         
-        if self.num_privileged_obs is not None:
-            self.privileged_obs_buf = torch.zeros(self.num_envs, self.num_privileged_obs, device=self.device, dtype=torch.float)
-        else: 
-            self.privileged_obs_buf = None
-            # self.num_privileged_obs = self.num_obs
+        # if self.num_privileged_obs is not None:
+        #     self.privileged_obs_buf = torch.zeros(self.num_envs, self.num_privileged_obs, device=self.device, dtype=torch.float)
+        # else: 
+        #     self.privileged_obs_buf = None
+        #     # self.num_privileged_obs = self.num_obs
 
         self.extras = {}
 

@@ -44,12 +44,12 @@ from typing import Tuple, Dict
 from legged_gym import LEGGED_GYM_ROOT_DIR
 from legged_gym.envs.base.base_task import BaseTask
 from legged_gym.utils.terrain import Terrain
-from legged_gym.utils.math import quat_apply_yaw, wrap_to_pi, torch_rand_sqrt_float
+from legged_gym.utils.math import quat_apply_yaw, wrap_to_pi, torch_rand_sqrt_float,get_scale_shift
 from legged_gym.utils.helpers import class_to_dict
 from .legged_robot_config import LeggedRobotCfg
 
 class LeggedRobot(BaseTask):
-    def __init__(self, cfg: LeggedRobotCfg, sim_params, physics_engine, sim_device, headless, initial_dynamics_dict=None):
+    def __init__(self, cfg: LeggedRobotCfg, sim_params, physics_engine, sim_device, headless,eval_cfg=None, initial_dynamics_dict=None):
         """ Parses the provided config file,
             calls create_sim() (which creates, simulation, terrain and environments),
             initilizes pytorch buffers used during training
@@ -63,6 +63,7 @@ class LeggedRobot(BaseTask):
             headless (bool): Run without rendering if True
         """
         self.cfg = cfg
+        self.eval_cfg = eval_cfg
         self.sim_params = sim_params
         self.height_samples = None
         self.debug_viz = False
@@ -70,9 +71,10 @@ class LeggedRobot(BaseTask):
         self.init_done = False
         self.svan_terrain = False
         self._parse_cfg(self.cfg)
+        if eval_cfg is not None: self._parse_cfg(eval_cfg)
         self.default_feet_rigid_shape_props = None
         self.default_base_rigid_body_props = None
-        super().__init__(self.cfg, sim_params, physics_engine, sim_device, headless)
+        super().__init__(self.cfg, sim_params, physics_engine, sim_device, headless, self.eval_cfg)
         self._init_command_distribution(torch.arange(self.num_envs, device=self.device))
 
         if not self.headless:
@@ -221,6 +223,7 @@ class LeggedRobot(BaseTask):
         env_ids = self.reset_buf.nonzero(as_tuple=False).flatten()
         self.reset_idx(env_ids)
         self.compute_observations() # in some cases a simulation step might be required to refresh some obs (for example body positions)
+        
         self.last_last_actions[:] = self.last_actions[:]
         self.last_last_joint_pos_target[:] = self.last_joint_pos_target[:]
         self.last_joint_pos_target[:] = self.joint_pos_target[:]
@@ -423,9 +426,6 @@ class LeggedRobot(BaseTask):
         if self.cfg.env.observe_two_prev_actions:
             self.obs_buf = torch.cat((self.obs_buf,
                                       self.last_actions), dim=-1)
-        if self.cfg.env.observe_timing_parameter:
-            self.obs_buf = torch.cat((self.obs_buf,
-                                      self.gait_indices.unsqueeze(1)), dim=-1)
 
         if self.cfg.env.observe_timing_parameter:
             self.obs_buf = torch.cat((self.obs_buf,
@@ -445,6 +445,121 @@ class LeggedRobot(BaseTask):
         # print("Obs buf Shape: ", self.obs_buf.shape)
         self.obs_buf[stance_env_obs, 9:11] = 0       
         
+        # build privileged obs
+
+        self.privileged_obs_buf = torch.empty(self.num_envs, 0).to(self.device)
+        self.next_privileged_obs_buf = torch.empty(self.num_envs, 0).to(self.device)
+
+        if self.cfg.env.priv_observe_friction:
+            friction_coeffs_scale, friction_coeffs_shift = get_scale_shift(self.cfg.normalization.friction_range)
+            self.privileged_obs_buf = torch.cat((self.privileged_obs_buf,
+                                                 (self.friction_coeffs[:, 0].unsqueeze(
+                                                     1) - friction_coeffs_shift) * friction_coeffs_scale),
+                                                dim=1)
+            self.next_privileged_obs_buf = torch.cat((self.next_privileged_obs_buf,
+                                                      (self.friction_coeffs[:, 0].unsqueeze(
+                                                          1) - friction_coeffs_shift) * friction_coeffs_scale),
+                                                     dim=1)
+        if self.cfg.env.priv_observe_ground_friction:
+            self.ground_friction_coeffs = self._get_ground_frictions(range(self.num_envs))
+            ground_friction_coeffs_scale, ground_friction_coeffs_shift = get_scale_shift(
+                self.cfg.normalization.ground_friction_range)
+            self.privileged_obs_buf = torch.cat((self.privileged_obs_buf,
+                                                 (self.ground_friction_coeffs.unsqueeze(
+                                                     1) - ground_friction_coeffs_shift) * ground_friction_coeffs_scale),
+                                                dim=1)
+            self.next_privileged_obs_buf = torch.cat((self.next_privileged_obs_buf,
+                                                      (self.ground_friction_coeffs.unsqueeze(
+                                                          1) - friction_coeffs_shift) * friction_coeffs_scale),
+                                                     dim=1)
+        if self.cfg.env.priv_observe_restitution:
+            restitutions_scale, restitutions_shift = get_scale_shift(self.cfg.normalization.restitution_range)
+            self.privileged_obs_buf = torch.cat((self.privileged_obs_buf,
+                                                 (self.restitutions[:, 0].unsqueeze(
+                                                     1) - restitutions_shift) * restitutions_scale),
+                                                dim=1)
+            self.next_privileged_obs_buf = torch.cat((self.next_privileged_obs_buf,
+                                                      (self.restitutions[:, 0].unsqueeze(
+                                                          1) - restitutions_shift) * restitutions_scale),
+                                                     dim=1)
+        if self.cfg.env.priv_observe_base_mass:
+            payloads_scale, payloads_shift = get_scale_shift(self.cfg.normalization.added_mass_range)
+            self.privileged_obs_buf = torch.cat((self.privileged_obs_buf,
+                                                 (self.payloads.unsqueeze(1) - payloads_shift) * payloads_scale),
+                                                dim=1)
+            self.next_privileged_obs_buf = torch.cat((self.next_privileged_obs_buf,
+                                                      (self.payloads.unsqueeze(1) - payloads_shift) * payloads_scale),
+                                                     dim=1)
+        if self.cfg.env.priv_observe_com_displacement:
+            com_displacements_scale, com_displacements_shift = get_scale_shift(
+                self.cfg.normalization.com_displacement_range)
+            self.privileged_obs_buf = torch.cat((self.privileged_obs_buf,
+                                                 (
+                                                         self.com_displacements - com_displacements_shift) * com_displacements_scale),
+                                                dim=1)
+            self.next_privileged_obs_buf = torch.cat((self.next_privileged_obs_buf,
+                                                      (
+                                                              self.com_displacements - com_displacements_shift) * com_displacements_scale),
+                                                     dim=1)
+        if self.cfg.env.priv_observe_motor_strength:
+            motor_strengths_scale, motor_strengths_shift = get_scale_shift(self.cfg.normalization.motor_strength_range)
+            self.privileged_obs_buf = torch.cat((self.privileged_obs_buf,
+                                                 (
+                                                         self.motor_strengths - motor_strengths_shift) * motor_strengths_scale),
+                                                dim=1)
+            self.next_privileged_obs_buf = torch.cat((self.next_privileged_obs_buf,
+                                                      (
+                                                              self.motor_strengths - motor_strengths_shift) * motor_strengths_scale),
+                                                     dim=1)
+        if self.cfg.env.priv_observe_motor_offset:
+            motor_offset_scale, motor_offset_shift = get_scale_shift(self.cfg.normalization.motor_offset_range)
+            self.privileged_obs_buf = torch.cat((self.privileged_obs_buf,
+                                                 (
+                                                         self.motor_offsets - motor_offset_shift) * motor_offset_scale),
+                                                dim=1)
+            self.next_privileged_obs_buf = torch.cat((self.privileged_obs_buf,
+                                                      (
+                                                              self.motor_offsets - motor_offset_shift) * motor_offset_scale),
+                                                     dim=1)
+        if self.cfg.env.priv_observe_body_height:
+            body_height_scale, body_height_shift = get_scale_shift(self.cfg.normalization.body_height_range)
+            self.privileged_obs_buf = torch.cat((self.privileged_obs_buf,
+                                                 ((self.root_states[:self.num_envs, 2]).view(
+                                                     self.num_envs, -1) - body_height_shift) * body_height_scale),
+                                                dim=1)
+            self.next_privileged_obs_buf = torch.cat((self.next_privileged_obs_buf,
+                                                      ((self.root_states[:self.num_envs, 2]).view(
+                                                          self.num_envs, -1) - body_height_shift) * body_height_scale),
+                                                     dim=1)
+        if self.cfg.env.priv_observe_body_velocity:
+            body_velocity_scale, body_velocity_shift = get_scale_shift(self.cfg.normalization.body_velocity_range)
+            self.privileged_obs_buf = torch.cat((self.privileged_obs_buf,
+                                                 ((self.base_lin_vel).view(self.num_envs,
+                                                                           -1) - body_velocity_shift) * body_velocity_scale),
+                                                dim=1)
+            self.next_privileged_obs_buf = torch.cat((self.next_privileged_obs_buf,
+                                                      ((self.base_lin_vel).view(self.num_envs,
+                                                                                -1) - body_velocity_shift) * body_velocity_scale),
+                                                     dim=1)
+        if self.cfg.env.priv_observe_gravity:
+            gravity_scale, gravity_shift = get_scale_shift(self.cfg.normalization.gravity_range)
+            self.privileged_obs_buf = torch.cat((self.privileged_obs_buf,
+                                                 (self.gravities - gravity_shift) / gravity_scale),
+                                                dim=1)
+            self.next_privileged_obs_buf = torch.cat((self.next_privileged_obs_buf,
+                                                      (self.gravities - gravity_shift) / gravity_scale), dim=1)
+
+        if self.cfg.env.priv_observe_clock_inputs:
+            self.privileged_obs_buf = torch.cat((self.privileged_obs_buf,
+                                                 self.clock_inputs), dim=-1)
+
+        if self.cfg.env.priv_observe_desired_contact_states:
+            self.privileged_obs_buf = torch.cat((self.privileged_obs_buf,
+                                                 self.desired_contact_states), dim=-1)
+
+        assert self.privileged_obs_buf.shape[
+                   1] == self.cfg.env.num_privileged_obs, f"num_privileged_obs ({self.cfg.env.num_privileged_obs}) != the number of privileged observations ({self.privileged_obs_buf.shape[1]}), you will discard data from the student!"
+
 
     def create_sim(self):
         """ Creates simulation, terrain and evironments
@@ -454,7 +569,10 @@ class LeggedRobot(BaseTask):
         self.sim = self.gym.create_sim(self.sim_device_id, self.graphics_device_id, self.physics_engine, self.sim_params)
         mesh_type = self.cfg.terrain.mesh_type
         if mesh_type in ['heightfield', 'trimesh']:
-            self.terrain = Terrain(self.cfg.terrain, self.num_envs)
+            if self.eval_cfg is not None:
+                self.terrain = Terrain(self.cfg.terrain, self.num_train_envs, self.eval_cfg.terrain, self.num_eval_envs)
+            else:
+                self.terrain = Terrain(self.cfg.terrain, self.num_train_envs)
         if mesh_type=='plane':
             self._create_ground_plane()
         elif mesh_type=='heightfield':
